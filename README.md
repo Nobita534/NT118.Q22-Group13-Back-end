@@ -159,6 +159,67 @@ pip install -r requirements.txt
 
 Lưu ý: file `requirements.txt` bao gồm `beautifulsoup4`, `requests`, `google-generativeai`, `mysql-connector-python`.
 
+## 🔐 Biến môi trường bắt buộc
+
+Hệ thống dùng 4 nhóm biến môi trường chính. Team chỉ commit file mẫu, không commit file chứa secret thật.
+
+### 1) Core Laravel
+
+| Biến        | Mục đích                                           |
+| ----------- | -------------------------------------------------- |
+| `APP_NAME`  | Tên ứng dụng                                       |
+| `APP_ENV`   | Môi trường chạy (`local`, `staging`, `production`) |
+| `APP_KEY`   | Khóa mã hóa ứng dụng Laravel                       |
+| `APP_DEBUG` | Bật/tắt debug                                      |
+| `APP_URL`   | URL backend                                        |
+
+### 2) MySQL
+
+| Biến            | Mục đích                 |
+| --------------- | ------------------------ |
+| `DB_CONNECTION` | Driver kết nối (`mysql`) |
+| `DB_HOST`       | Host MySQL               |
+| `DB_PORT`       | Port MySQL               |
+| `DB_DATABASE`   | Tên database             |
+| `DB_USERNAME`   | Tài khoản DB             |
+| `DB_PASSWORD`   | Mật khẩu DB              |
+
+### 3) JWT Secret
+
+| Biến              | Mục đích                                  |
+| ----------------- | ----------------------------------------- |
+| `JWT_SECRET`      | Secret ký JWT                             |
+| `JWT_TTL`         | Thời gian sống access token (phút)        |
+| `JWT_REFRESH_TTL` | Thời gian sống refresh token (phút)       |
+| `JWT_ALGO`        | Thuật toán ký token (khuyến nghị `HS256`) |
+
+### 4) Gemini API Key
+
+| Biến             | Mục đích                                         |
+| ---------------- | ------------------------------------------------ |
+| `GEMINI_API_KEY` | API Key dùng gọi Google Gemini                   |
+| `GEMINI_MODEL`   | Model Gemini mặc định (ví dụ `gemini-2.5-flash`) |
+
+## 🛡 Chính sách bảo mật `.gitignore`
+
+- Ignore toàn bộ file `.env` và `.env.*` ở cả root, `backend`, `crawler`.
+- Chỉ cho phép commit file mẫu `.env.example`.
+- Giá trị thật của `DB_PASSWORD`, `JWT_SECRET`, `GEMINI_API_KEY` phải nằm trong máy local hoặc GitHub Secrets.
+
+## 🔧 Secret cho GitHub Actions (daily crawler)
+
+Trong GitHub repository settings, tạo các secrets sau để workflow `daily_crawl.yml` đọc khi chạy:
+
+- `DB_HOST`
+- `DB_PORT`
+- `DB_DATABASE`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `JWT_SECRET`
+- `GEMINI_API_KEY`
+
+Tùy chọn: tạo Repository Variable `GEMINI_MODEL` để đổi model mà không cần sửa code.
+
 ## ⚙️ Quy trình vận hành dữ liệu
 
 1. GitHub Actions tự động kích hoạt hàng ngày để chạy script trong thư mục `/crawler`.
