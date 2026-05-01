@@ -10,6 +10,7 @@ class SpecsController extends Controller
 {
     public function __construct(private readonly ArticleService $articles) {}
 
+    // Lấy các chỉ số nếu đó là báo sản phẩm
     public function show(int $id)
     {
         $specs = $this->articles->specs($id);

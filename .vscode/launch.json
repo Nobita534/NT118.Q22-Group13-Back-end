@@ -1,0 +1,46 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Laravel: artisan serve + Debug",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/artisan",
+      "args": ["serve", "--host=127.0.0.1", "--port=8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "port": 9003,
+      "runtimeArgs": ["-d", "xdebug.mode=debug", "-d", "xdebug.start_with_request=yes"],
+      "serverReadyAction": {
+        "action": "openExternally",
+        "uriFormat": "http://127.0.0.1:8000"
+      }
+    },
+    {
+      "name": "PHP Built-in Server + Debug",
+      "type": "php",
+      "request": "launch",
+      "runtimeArgs": [
+        "-d",
+        "xdebug.mode=debug",
+        "-d",
+        "xdebug.start_with_request=yes",
+        "-S",
+        "127.0.0.1:8000",
+        "-t",
+        "${workspaceFolder}/backend/public"
+      ],
+      "cwd": "${workspaceFolder}/backend",
+      "port": 9003,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "uriFormat": "http://127.0.0.1:8000"
+      }
+    },
+    {
+      "name": "Listen for Xdebug",
+      "type": "php",
+      "request": "launch",
+      "port": 9003
+    }
+  ]
+}

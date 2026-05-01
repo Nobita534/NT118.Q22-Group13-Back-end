@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\V1\MeController;
 use App\Http\Controllers\Api\V1\SpecsController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->group(function (): void {
+Route::prefix('techbyte')->group(function (): void {
     Route::post('auth/login', [AuthController::class, 'login']);
 
     Route::get('articles', [ArticleController::class, 'index']);

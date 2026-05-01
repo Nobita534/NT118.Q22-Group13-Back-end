@@ -241,10 +241,16 @@ flowchart TD
 
 ## 🔌 Danh mục API chính (Draft)
 
-| Method | Endpoint                   | Mô tả                                  |
-| ------ | -------------------------- | -------------------------------------- |
-| POST   | `/api/auth/login`          | Đăng nhập lấy JWT Token                |
-| GET    | `/api/articles`            | Danh sách bài báo (phân trang)         |
-| GET    | `/api/articles/{id}`       | Chi tiết bài báo (nội dung tóm tắt)    |
-| GET    | `/api/articles/{id}/specs` | JSON thông số kỹ thuật (để vẽ biểu đồ) |
-| POST   | `/api/comments`            | Gửi bình luận mới                      |
+Prefix chuẩn: `/api/techbyte`
+
+| Method | Endpoint                               | Mô tả                                  | Ghi chú |
+| ------ | -------------------------------------- | -------------------------------------- | ------- |
+| POST   | `/api/techbyte/auth/login`             | Đăng nhập lấy JWT Token                | Public  |
+| GET    | `/api/techbyte/articles`               | Danh sách bài báo (phân trang)         | Public  |
+| GET    | `/api/techbyte/articles/{id}`          | Chi tiết bài báo (nội dung tóm tắt)    | Public  |
+| GET    | `/api/techbyte/articles/{id}/specs`    | JSON thông số kỹ thuật (để vẽ biểu đồ) | Public  |
+| GET    | `/api/techbyte/articles/{id}/comments` | Danh sách bình luận theo bài viết      | Public  |
+| POST   | `/api/techbyte/comments`               | Gửi bình luận mới                      | Auth    |
+| POST   | `/api/techbyte/articles/{id}/like`     | Like bài viết                          | Auth    |
+| POST   | `/api/techbyte/articles/{id}/bookmark` | Lưu bài viết                           | Auth    |
+| GET    | `/api/techbyte/me`                     | Thông tin người dùng hiện tại          | Auth    |
