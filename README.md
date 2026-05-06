@@ -245,7 +245,10 @@ Prefix chuẩn: `/api/techbyte`
 
 | Method | Endpoint                               | Mô tả                                  | Ghi chú |
 | ------ | -------------------------------------- | -------------------------------------- | ------- |
-| POST   | `/api/techbyte/auth/login`             | Đăng nhập lấy JWT Token                | Public  |
+| POST   | `/api/techbyte/auth/login`             | Đăng nhập lấy access token             | Public  |
+| POST   | `/api/techbyte/auth/register`          | Đăng ký tài khoản                      | Public  |
+| POST   | `/api/techbyte/auth/logout`            | Đăng xuất, thu hồi token               | Auth    |
+| POST   | `/api/techbyte/auth/forgot-password`   | Quên mật khẩu (tạm tắt)                | Public  |
 | GET    | `/api/techbyte/articles`               | Danh sách bài báo (phân trang)         | Public  |
 | GET    | `/api/techbyte/articles/{id}`          | Chi tiết bài báo (nội dung tóm tắt)    | Public  |
 | GET    | `/api/techbyte/articles/{id}/specs`    | JSON thông số kỹ thuật (để vẽ biểu đồ) | Public  |
