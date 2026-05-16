@@ -44,6 +44,10 @@ class AuthController extends Controller
                 return ApiResponse::error('Username already exists.', 409, 'AUTH_USERNAME_TAKEN');
             }
 
+            if (config('app.debug')) {
+                return ApiResponse::error('Registration failed: ' . $exception->getMessage(), 400, 'AUTH_REGISTER_FAILED');
+            }
+
             return ApiResponse::error('Registration failed.', 400, 'AUTH_REGISTER_FAILED');
         }
 

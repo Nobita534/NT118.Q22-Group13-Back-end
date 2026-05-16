@@ -65,7 +65,8 @@ class AuthService
         $user = $this->users->create([
             'username' => $username,
             'email' => $email,
-            'password' => Hash::make($password),
+            // Let the User model handle hashing via the `password` cast
+            'password' => $password,
             'role' => 'user',
         ]);
 
