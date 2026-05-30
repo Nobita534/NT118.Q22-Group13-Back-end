@@ -90,6 +90,36 @@ class FakeArticleRepository implements ArticleRepositoryInterface
         ];
     }
 
+    public function getLatest(int $limit): array
+    {
+        return collect($this->articles())
+            ->sortByDesc('published_at')
+            ->take($limit)
+            ->map(function ($a) {
+                return [
+                    'title' => $a['title'] ?? null,
+                    'source' => $a['source']['name'] ?? null,
+                    'time' => $a['published_at'] ?? null,
+                    'interaction' => (int) ($a['stats']['views'] ?? 0),
+                ];
+            })->values()->all();
+    }
+
+    public function getTrending(int $limit): array
+    {
+        return collect($this->articles())
+            ->sortByDesc(fn($a) => $a['stats']['views'] ?? 0)
+            ->take($limit)
+            ->map(function ($a) {
+                return [
+                    'title' => $a['title'] ?? null,
+                    'source' => $a['source']['name'] ?? null,
+                    'time' => $a['published_at'] ?? null,
+                    'interaction' => (int) ($a['stats']['views'] ?? 0),
+                ];
+            })->values()->all();
+    }
+
     private function articles(): array
     {
         return [

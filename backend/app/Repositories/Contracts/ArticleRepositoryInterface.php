@@ -9,4 +9,8 @@ interface ArticleRepositoryInterface
     public function findById(int $id): ?array;
 
     public function findSpecsByArticleId(int $id): ?array;
+
+    public function getLatest(int $limit): array;
+
+    public function getTrending(int $limit): array;
 }

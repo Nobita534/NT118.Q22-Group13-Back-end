@@ -16,6 +16,7 @@ Route::prefix('techbyte')->group(function (): void {
 
     Route::get('articles', [ArticleController::class, 'index']);
     Route::get('articles/{id}', [ArticleController::class, 'show']);
+    Route::get('home', [\App\Http\Controllers\Api\V1\HomeController::class, 'index']);
     Route::get('articles/{id}/specs', [SpecsController::class, 'show']);
     Route::get('articles/{id}/comments', [CommentController::class, 'indexByArticle']);
 
