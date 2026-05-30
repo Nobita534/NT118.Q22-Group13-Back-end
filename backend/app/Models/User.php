@@ -22,7 +22,7 @@ class User extends Authenticatable
      *
      * @var string
      */
-    protected $table = 'user';
+    protected $table = 'User';
 
     /**
      * The primary key associated with the table.
@@ -36,7 +36,7 @@ class User extends Authenticatable
      *
      * @var bool
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * Get the attributes that should be cast.
