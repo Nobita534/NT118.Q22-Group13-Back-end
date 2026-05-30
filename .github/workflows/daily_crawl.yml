@@ -9,16 +9,6 @@ jobs:
   crawl:
     runs-on: ubuntu-latest
 
-    env:
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      DB_DATABASE: ${{ secrets.DB_DATABASE }}
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-      GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.5-flash' }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,6 +21,10 @@ jobs:
       - name: Install dependencies
         working-directory: crawler
         run: pip install -r requirements.txt
+
+      - name: Write .env
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > backend/.env
 
       - name: Run crawler
         working-directory: crawler
