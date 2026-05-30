@@ -8,7 +8,7 @@ class ArticlesTest extends TestCase
 {
     public function test_articles_list_returns_paginated_payload(): void
     {
-        $response = $this->getJson('/api/v1/articles?page=1&per_page=10');
+        $response = $this->getJson('/api/techbyte/articles?page=1&per_page=10');
 
         $response->assertOk()
             ->assertJsonPath('success', true)
@@ -25,7 +25,7 @@ class ArticlesTest extends TestCase
 
     public function test_article_detail_returns_mock_content(): void
     {
-        $response = $this->getJson('/api/v1/articles/101');
+        $response = $this->getJson('/api/techbyte/articles/101');
 
         $response->assertOk()
             ->assertJsonPath('success', true)

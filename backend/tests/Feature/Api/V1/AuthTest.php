@@ -8,7 +8,7 @@ class AuthTest extends TestCase
 {
     public function test_login_returns_token(): void
     {
-        $response = $this->postJson('/api/v1/auth/login', [
+        $response = $this->postJson('/api/techbyte/auth/login', [
             'email' => 'editor@techbyte.vn',
             'password' => 'Password@123',
         ]);
