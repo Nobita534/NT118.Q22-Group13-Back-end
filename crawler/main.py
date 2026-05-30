@@ -146,7 +146,12 @@ def run_crawler():
         print("[-] Không lấy được dữ liệu. Vui lòng kiểm tra lại URL hoặc mạng.")
         return
 
-    max_items = int(os.getenv('CRAWL_LIMIT', 10))
+    max_items_raw = (os.getenv('CRAWL_LIMIT') or '').strip()
+    try:
+        max_items = int(max_items_raw) if max_items_raw else 10
+    except ValueError:
+        print(f"[-] CRAWL_LIMIT khong hop le: '{max_items_raw}'. Dung gia tri mac dinh 10.")
+        max_items = 10
     connection = None
     try:
         connection = get_db_connection()
