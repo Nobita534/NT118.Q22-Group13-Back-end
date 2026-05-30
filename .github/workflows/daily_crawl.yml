@@ -26,6 +26,11 @@ jobs:
         run: |
           echo "${{ secrets.ENV_FILE }}" > backend/.env
 
+      - name: Write CA cert
+        run: |
+          mkdir -p storage/certs
+          echo "${{ secrets.AIVEN_CA_PEM }}" > storage/certs/ca.pem
+
       - name: Run crawler
         working-directory: crawler
         run: python main.py
