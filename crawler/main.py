@@ -8,6 +8,11 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from email.utils import parsedate_tz, mktime_tz
 from slugify import slugify # pip install python-slugify
+from dotenv import load_dotenv
+from google import genai
+
+# Load env from backend/.env if present
+load_dotenv(os.path.join(os.path.dirname(__file__), '../backend/.env'))
 
 # ==========================================
 # 1. DATABASE CONNECTION MODULE
@@ -38,6 +43,37 @@ def url_exists(cursor, url):
 # ==========================================
 # 2. CRAWLER & HTML PARSER MODULE
 # ==========================================
+def generate_summary(clean_text):
+    """
+    Goi Gemini API de tom tat noi dung. Tra ve chuoi tom tat hoac None.
+    """
+    api_key = os.getenv('GOOGLE_API_KEY')
+    if not api_key:
+        print("[-] Thieu GOOGLE_API_KEY, bo qua buoc tom tat.")
+        return None
+
+    model = os.getenv('GEMINI_MODEL', 'gemini-3.5-flash')
+    prompt = (
+        "Chi tra ve phan tom tat, khong them loi dan hay giai thich. "
+        "Tom tat noi dung sau thanh 1 doan 3-4 cau bang tieng Viet, trung tinh:\n\n"
+        f"{clean_text}"
+    )
+
+    try:
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model=model,
+            contents=prompt,
+        )
+        summary = (response.text or '').strip()
+        if not summary:
+            print("[-] Gemini khong tra ve tom tat.")
+            return None
+        return summary
+    except Exception as e:
+        print(f"[-] Loi goi Gemini SDK: {e}")
+        return None
+
 def fetch_and_clean_article(url):
     """
     Lấy chi tiết bài báo (full text) và làm sạch HTML
@@ -55,11 +91,12 @@ def fetch_and_clean_article(url):
         if not content_div:
             return None, None
             
-        for tag in content_div.find_all(['script', 'style', 'iframe']):
+        for tag in content_div.find_all(['script', 'style', 'iframe', 'figcaption']):
             tag.decompose()
             
         content_html = str(content_div)
-        clean_text = ' '.join(content_div.get_text(strip=True).split())
+        raw_text = content_div.get_text(separator='\n', strip=True)
+        clean_text = normalize_text(raw_text)
         
         return content_html, clean_text
 
@@ -69,6 +106,25 @@ def fetch_and_clean_article(url):
     except Exception as e:
         print(f"[-] Lỗi parse HTML cho {url}: {e}")
         return None, None
+
+def normalize_text(raw_text):
+    """Lam sach noi dung de tranh thieu khoang trang va loai bo dong du thua."""
+    lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
+    filtered = []
+    for line in lines:
+        lower = line.lower()
+        if lower.startswith('anh:') or lower.startswith('ảnh:'):
+            continue
+        if lower.startswith('nguon:') or lower.startswith('nguồn:'):
+            continue
+        if lower.startswith('video:') or lower.startswith('clip:'):
+            continue
+        filtered.append(line)
+
+    cleaned = ' '.join(filtered)
+    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+    cleaned = re.sub(r'\s+([,.!?;:])', r'\1', cleaned)
+    return cleaned
 
 def parse_publish_date(date_str):
     """Chuyển đổi ngày tháng."""
@@ -90,6 +146,7 @@ def run_crawler():
         print("[-] Không lấy được dữ liệu. Vui lòng kiểm tra lại URL hoặc mạng.")
         return
 
+    max_items = int(os.getenv('CRAWL_LIMIT', 10))
     connection = None
     try:
         connection = get_db_connection()
@@ -97,7 +154,7 @@ def run_crawler():
         
         total_inserted = 0
         
-        for entry in feed.entries:
+        for entry in feed.entries[:max_items]:
             title = entry.get('title', '')
             link = entry.get('link', '')
             pub_date_str = entry.get('published', '')
@@ -125,6 +182,8 @@ def run_crawler():
                 print(f"[-] Không thể parse nội dung, bỏ qua: {link}")
                 continue
 
+            summary_text = generate_summary(clean_text) if clean_text else None
+
             try:
                 with connection.cursor() as cursor:
                     sql_article = """
@@ -137,10 +196,13 @@ def run_crawler():
                     
                     sql_content = """
                         INSERT INTO Article_Content 
-                        (Article_ID, ContentHTML, CleanText) 
-                        VALUES (%s, %s, %s)
+                        (Article_ID, ContentHTML, CleanText, Sum_content) 
+                        VALUES (%s, %s, %s, %s)
                     """
-                    cursor.execute(sql_content, (article_id, content_html, clean_text))
+                    cursor.execute(
+                        sql_content,
+                        (article_id, content_html, clean_text, summary_text)
+                    )
                 
                 connection.commit()
                 total_inserted += 1

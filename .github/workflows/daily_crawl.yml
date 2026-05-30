@@ -2,7 +2,7 @@ name: Daily Crawler
 
 on:
   schedule:
-    - cron: "0 1 * * *"
+       - cron: "0 1 * * *"
   workflow_dispatch:
 
 jobs:
@@ -16,8 +16,8 @@ jobs:
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-2.5-flash' }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.5-flash' }}
 
     steps:
       - name: Checkout code
