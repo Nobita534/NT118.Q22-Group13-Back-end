@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $useFake = config('repositories.use_fake', true);
+        $useFake = config('repositories.use_fake', false);
 
         if ($useFake) {
             $this->app->bind(UserRepositoryInterface::class, FakeUserRepository::class);

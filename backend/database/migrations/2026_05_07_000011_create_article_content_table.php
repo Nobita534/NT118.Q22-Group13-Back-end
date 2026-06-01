@@ -15,7 +15,8 @@ return new class extends Migration
             $table->unsignedInteger('Article_ID');
             $table->longText('ContentHTML')->nullable();
             $table->longText('CleanText')->nullable();
-
+            $table->longText('Sum_content')->nullable();
+            $table->string('sum_voice_link')->nullable();
             $table->primary('Article_ID');
             $table->foreign('Article_ID')
                 ->references('Article_ID')
