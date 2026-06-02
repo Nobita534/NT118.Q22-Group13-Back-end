@@ -158,6 +158,7 @@ class FakeArticleRepository implements ArticleRepositoryInterface
                 'summary_text' => 'Bài test hiệu năng CPU/GPU và nhiệt độ trong tác vụ nặng.',
                 'thumbnail_url' => 'https://cdn.techbyte.vn/articles/101/thumb.jpg',
                 'original_url' => 'https://techbyte.vn/articles/101',
+                'source' => 'https://techbyte.vn/articles/101',
                 'categories' => [
                     ['id' => 5, 'name' => 'Mobile', 'slug' => 'mobile', 'is_primary' => true],
                     ['id' => 9, 'name' => 'Chipset', 'slug' => 'chipset', 'is_primary' => false],
@@ -189,6 +190,7 @@ class FakeArticleRepository implements ArticleRepositoryInterface
                 'summary_text' => 'Tổng hợp camera, pin và trải nghiệm thực tế.',
                 'thumbnail_url' => 'https://cdn.techbyte.vn/articles/102/thumb.jpg',
                 'original_url' => 'https://techbyte.vn/articles/102',
+                'source' => 'https://techbyte.vn/articles/102',
                 'categories' => [
                     ['id' => 6, 'name' => 'Review', 'slug' => 'review', 'is_primary' => true],
                 ],

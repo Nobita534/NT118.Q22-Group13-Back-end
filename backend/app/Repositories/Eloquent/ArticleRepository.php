@@ -155,11 +155,17 @@ class ArticleRepository implements ArticleRepositoryInterface
         $thumbnail = $m->ThumbnailURL ?? $m->thumbnail_url ?? null;
 
         return [
+            'id' => (int) ($m->Article_ID ?? 0),
             'title' => $m->Title ?? null,
+            'slug' => $m->Slug ?? null,
+            'summary' => $m->Summary_text ?? $m->SummaryText ?? null,
+            'summary_text' => $m->Summary_text ?? $m->SummaryText ?? null,
             'source' => $m->Original_URL ?? null,
             'time' => $m->PublishDate ? (is_string($m->PublishDate) ? $m->PublishDate : $m->PublishDate->toIso8601String()) : null,
             'interaction' => (int) ($m->ViewCount ?? 0),
             'thumbnail' => $thumbnail,
+            'thumbnail_url' => $thumbnail,
+            'stats' => ['comments_count' => 0, 'likes' => 0, 'bookmarks' => 0],
         ];
     }
 }
