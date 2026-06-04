@@ -124,10 +124,7 @@ class ArticleRepository implements ArticleRepositoryInterface
                 'categories' => [],
                 'tags' => [],
                 'products' => [],
-                'content' => [
-                    'html' => $row->content_html ?? null,
-                    'clean_text' => $row->content_clean ?? null,
-                ],
+                'content' => $row->content_clean ?? ($row->content_html ?? ''),
                 'published_at' => $row->PublishDate ? (is_string($row->PublishDate) ? $row->PublishDate : $row->PublishDate->toIso8601String()) : null,
                 'updated_at' => $row->updated_at ?? null,
                 'stats' => ['views' => (int) ($row->ViewCount ?? 0), 'comments_count' => 0, 'likes' => 0, 'bookmarks' => 0],
@@ -155,7 +152,11 @@ class ArticleRepository implements ArticleRepositoryInterface
         $thumbnail = $m->ThumbnailURL ?? $m->thumbnail_url ?? null;
 
         return [
+<<<<<<< Updated upstream
             'id' => (int) ($m->Article_ID ?? 0),
+=======
+            'id' => $m->Article_ID ?? null,
+>>>>>>> Stashed changes
             'title' => $m->Title ?? null,
             'slug' => $m->Slug ?? null,
             'summary' => $m->Summary_text ?? $m->SummaryText ?? null,
