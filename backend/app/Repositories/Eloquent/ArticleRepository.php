@@ -152,11 +152,7 @@ class ArticleRepository implements ArticleRepositoryInterface
         $thumbnail = $m->ThumbnailURL ?? $m->thumbnail_url ?? null;
 
         return [
-<<<<<<< Updated upstream
             'id' => (int) ($m->Article_ID ?? 0),
-=======
-            'id' => $m->Article_ID ?? null,
->>>>>>> Stashed changes
             'title' => $m->Title ?? null,
             'slug' => $m->Slug ?? null,
             'summary' => $m->Summary_text ?? $m->SummaryText ?? null,
