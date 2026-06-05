@@ -6,15 +6,16 @@ use App\Repositories\Contracts\InteractionRepositoryInterface;
 
 class InteractionService
 {
-    public function __construct(private readonly InteractionRepositoryInterface $interactions) {}
+    protected InteractionRepositoryInterface $interactionRepository;
 
-    public function like(int $articleId, array $user): array
+    public function __construct(InteractionRepositoryInterface $interactionRepository)
     {
-        return $this->interactions->like($articleId, $user);
+        $this->interactionRepository = $interactionRepository;
     }
 
-    public function bookmark(int $articleId, array $user): array
+    public function toggleLike(int $articleId, array $user): array
     {
-        return $this->interactions->bookmark($articleId, $user);
+        // Gọi hàm xử lý tương tác đã được tối ưu bên trong Repository
+        return $this->interactionRepository->like($articleId, $user);
     }
 }
