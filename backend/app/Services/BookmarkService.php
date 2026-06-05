@@ -19,4 +19,13 @@ class BookmarkService
         // Gọi hàm duy nhất đã ôm trọn logic toggle ở tầng Repository
         return $this->bookmarkRepository->bookmark($articleId, $user);
     }
+    public function getBookmarkedArticles(array $user): array
+    {
+        return $this->bookmarkRepository->getBookmarkedArticles($user);
+    }
+
+    public function getBookmarkedArticlesCount(array $user): int
+    {
+        return $this->bookmarkRepository->getBookmarkedArticlesCount($user);
+    }
 }

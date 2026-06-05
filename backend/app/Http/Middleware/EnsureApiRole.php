@@ -12,9 +12,10 @@ class EnsureApiRole
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = $request->attributes->get('api_user');
-        $role = $user['role'] ?? null;
+        $role = strtolower((string) ($user['role'] ?? ''));
+        $allowedRoles = array_map('strtolower', $roles);
 
-        if (! $role || ! in_array($role, $roles, true)) {
+        if (! $role || ! in_array($role, $allowedRoles, true)) {
             return ApiResponse::error('Forbidden for this role.', 403, 'AUTH_FORBIDDEN_ROLE');
         }
 

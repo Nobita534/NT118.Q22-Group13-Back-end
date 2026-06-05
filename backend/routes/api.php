@@ -27,7 +27,9 @@ Route::prefix('techbyte')->group(function (): void {
         Route::middleware('api.role:user,admin')->group(function (): void {
             Route::post('comments', [CommentController::class, 'store']);
             Route::post('articles/{id}/like', [InteractionController::class, 'like']);
-            Route::post('articles/{id}/bookmark', [BookMarkController::class, 'bookmark']);
+            Route::post('articles/{id}/bookmark', [BookmarkController::class, 'bookmark']);
+            Route::get('me/bookmarks/count', [BookmarkController::class, 'count']);
+            Route::get('me/bookmarks', [BookmarkController::class, 'index']);
             Route::get('me', [MeController::class, 'me']);
         });
     });
