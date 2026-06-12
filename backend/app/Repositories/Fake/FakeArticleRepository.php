@@ -98,7 +98,7 @@ class FakeArticleRepository implements ArticleRepositoryInterface
             ->map(function ($a) {
                 return [
                     'title' => $a['title'] ?? null,
-                    'source' => $a['source']['name'] ?? null,
+                    'source' => $a['original_url'] ?? null,
                     'time' => $a['published_at'] ?? null,
                     'interaction' => (int) ($a['stats']['views'] ?? 0),
                 ];
@@ -113,11 +113,38 @@ class FakeArticleRepository implements ArticleRepositoryInterface
             ->map(function ($a) {
                 return [
                     'title' => $a['title'] ?? null,
-                    'source' => $a['source']['name'] ?? null,
+                    'source' => $a['original_url'] ?? null,
                     'time' => $a['published_at'] ?? null,
                     'interaction' => (int) ($a['stats']['views'] ?? 0),
                 ];
             })->values()->all();
+    }
+
+    public function findByIdWithContent(int $id): ?array
+    {
+        return $this->findById($id);
+    }
+
+    public function findManyByIdsWithContent(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        return collect($this->articles())->whereIn('id', $ids)->values()->all();
+    }
+
+    public function getRelatedArticleIds(array $article, int $limit = 3): array
+    {
+        $currentId = $article['id'] ?? null;
+        $rows = collect($this->articles())
+            ->where('id', '!=', $currentId)
+            ->sortByDesc('published_at')
+            ->take($limit)
+            ->pluck('id')
+            ->all();
+
+        return $rows;
     }
 
     private function articles(): array
@@ -128,8 +155,10 @@ class FakeArticleRepository implements ArticleRepositoryInterface
                 'title' => 'Snapdragon 8 Gen 5: hiệu năng thực tế',
                 'slug' => 'snapdragon-8-gen-5-hieu-nang-thuc-te',
                 'summary' => 'Bài test hiệu năng CPU/GPU và nhiệt độ trong tác vụ nặng.',
+                'summary_text' => 'Bài test hiệu năng CPU/GPU và nhiệt độ trong tác vụ nặng.',
                 'thumbnail_url' => 'https://cdn.techbyte.vn/articles/101/thumb.jpg',
-                'source' => ['id' => 3, 'name' => 'TechByte', 'website_url' => 'https://techbyte.vn'],
+                'original_url' => 'https://techbyte.vn/articles/101',
+                'source' => 'https://techbyte.vn/articles/101',
                 'categories' => [
                     ['id' => 5, 'name' => 'Mobile', 'slug' => 'mobile', 'is_primary' => true],
                     ['id' => 9, 'name' => 'Chipset', 'slug' => 'chipset', 'is_primary' => false],
@@ -158,8 +187,10 @@ class FakeArticleRepository implements ArticleRepositoryInterface
                 'title' => 'iPhone 18 Pro Max: camera và pin',
                 'slug' => 'iphone-18-pro-max-camera-va-pin',
                 'summary' => 'Tổng hợp camera, pin và trải nghiệm thực tế.',
+                'summary_text' => 'Tổng hợp camera, pin và trải nghiệm thực tế.',
                 'thumbnail_url' => 'https://cdn.techbyte.vn/articles/102/thumb.jpg',
-                'source' => ['id' => 4, 'name' => 'TechByte Lab', 'website_url' => 'https://lab.techbyte.vn'],
+                'original_url' => 'https://techbyte.vn/articles/102',
+                'source' => 'https://techbyte.vn/articles/102',
                 'categories' => [
                     ['id' => 6, 'name' => 'Review', 'slug' => 'review', 'is_primary' => true],
                 ],

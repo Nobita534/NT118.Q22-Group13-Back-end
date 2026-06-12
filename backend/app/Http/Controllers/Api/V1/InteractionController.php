@@ -3,27 +3,29 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\InteractionRequest;
 use App\Services\InteractionService;
 use App\Support\ApiResponse;
-use Illuminate\Http\Request;
 
 class InteractionController extends Controller
 {
-    public function __construct(private readonly InteractionService $interactions) {}
+    protected InteractionService $interactionService;
 
-    public function like(int $id, Request $request)
+    public function __construct(InteractionService $interactionService)
     {
-        $user = $request->attributes->get('api_user');
-        $result = $this->interactions->like($id, $user);
-
-        return ApiResponse::success($result, $result['already_liked'] ? 'Article already liked.' : 'Article liked successfully.');
+        $this->interactionService = $interactionService;
     }
 
-    public function bookmark(int $id, Request $request)
+    public function like(InteractionRequest $request, $id)
     {
-        $user = $request->attributes->get('api_user');
-        $result = $this->interactions->bookmark($id, $user);
+        // Lấy mảng thông tin User từ custom middleware của bạn
+        $user = $request->attributes->get('api_user'); 
 
-        return ApiResponse::success($result, $result['already_bookmarked'] ? 'Article already bookmarked.' : 'Article bookmarked successfully.');
+        // dd($user);
+
+        // Khớp đúng với signature mới ở tầng Service: (int $articleId, array $user)
+        $result = $this->interactionService->toggleLike((int)$id, $user);
+
+        return ApiResponse::success($result, 'Xử lý tương tác bài viết thành công.');
     }
 }
