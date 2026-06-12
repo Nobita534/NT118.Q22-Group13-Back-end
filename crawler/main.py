@@ -45,17 +45,19 @@ def url_exists(cursor, url):
 # ==========================================
 def generate_summary(clean_text):
     """
-    Goi Gemini API de tom tat noi dung. Tra ve chuoi tom tat hoac None.
+    Goi Gemini API de phan loai bai viet (Category) va tom tat noi dung.
+    Tra ve tuple: (category, summary) hoac ("Khác", None) neu loi.
     """
     api_key = os.getenv('GOOGLE_API_KEY')
     if not api_key:
         print("[-] Thieu GOOGLE_API_KEY, bo qua buoc tom tat.")
-        return None
+        return "Khác", None
 
     model = os.getenv('GEMINI_MODEL', 'gemini-3.5-flash')
     prompt = (
-        "Chi tra ve phan tom tat, khong them loi dan hay giai thich. "
-        "Tom tat noi dung sau thanh 1 doan 3-4 cau bang tieng Viet, trung tinh:\n\n"
+        "Phân tích nội dung sau và trả về đúng định dạng gồm 2 dòng:\n"
+        "Category: [chọn 1 trong: 'Trí tuệ nhân tạo (AI) & Robot', 'An ninh mạng', 'Review công nghệ', 'Sự kiện Đời sống số', 'Khác']\n"
+        "Summary: [Tóm tắt 3-4 câu tiếng Việt, trung tính, không bình luận thêm]\n\n"
         f"{clean_text}"
     )
 
@@ -65,14 +67,25 @@ def generate_summary(clean_text):
             model=model,
             contents=prompt,
         )
-        summary = (response.text or '').strip()
-        if not summary:
+        text = (response.text or '').strip()
+        if not text:
             print("[-] Gemini khong tra ve tom tat.")
-            return None
-        return summary
+            return "Khác", None
+            
+        category = "Khác"
+        summary = ""
+        for line in text.splitlines():
+            if line.startswith("Category:"):
+                category = line.replace("Category:", "").strip().strip("'\"")
+            elif line.startswith("Summary:"):
+                summary = line.replace("Summary:", "").strip()
+            elif summary:
+                summary += " " + line.strip()
+                
+        return category, summary.strip()
     except Exception as e:
         print(f"[-] Loi goi Gemini SDK: {e}")
-        return None
+        return "Khác", None
 
 def fetch_and_clean_article(url):
     """
@@ -187,26 +200,26 @@ def run_crawler():
                 print(f"[-] Không thể parse nội dung, bỏ qua: {link}")
                 continue
 
-            summary_text = generate_summary(clean_text) if clean_text else None
+            category_text, summary_text = generate_summary(clean_text) if clean_text else ("Khác", None)
 
             try:
                 with connection.cursor() as cursor:
                     sql_article = """
                         INSERT INTO Article 
-                        (Title, Slug, ThumbnailURL, Original_URL, PublishDate, Status) 
-                        VALUES (%s, %s, %s, %s, %s, %s)
+                        (Title, Slug, ThumbnailURL, Original_URL, PublishDate, ViewCount, Category) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
                     """
-                    cursor.execute(sql_article, (title, slug, thumbnail_url, link, publish_date, 'published'))
+                    cursor.execute(sql_article, (title, slug, thumbnail_url, link, publish_date, 0, category_text))
                     article_id = cursor.lastrowid
                     
                     sql_content = """
                         INSERT INTO Article_Content 
-                        (Article_ID, ContentHTML, CleanText, Sum_content) 
-                        VALUES (%s, %s, %s, %s)
+                        (Article_ID, ContentHTML, CleanText, Sum_Content, Sum_Voice_link) 
+                        VALUES (%s, %s, %s, %s, %s)
                     """
                     cursor.execute(
                         sql_content,
-                        (article_id, content_html, clean_text, summary_text)
+                        (article_id, content_html, clean_text, summary_text, None)
                     )
                 
                 connection.commit()
