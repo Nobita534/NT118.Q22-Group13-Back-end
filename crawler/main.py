@@ -11,8 +11,22 @@ from slugify import slugify # pip install python-slugify
 from dotenv import load_dotenv
 from google import genai
 
+import uuid
+import tempfile
+import cloudinary
+import cloudinary.uploader
+from gtts import gTTS
+
 # Load env from backend/.env if present
 load_dotenv(os.path.join(os.path.dirname(__file__), '../backend/.env'))
+
+# Cấu hình Cloudinary
+cloudinary.config( 
+  cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'), 
+  api_key = os.getenv('CLOUDINARY_API_KEY'), 
+  api_secret = os.getenv('CLOUDINARY_API_SECRET'),
+  secure = True
+)
 
 # ==========================================
 # 1. DATABASE CONNECTION MODULE
@@ -147,6 +161,45 @@ def parse_publish_date(date_str):
     except Exception:
         return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+def generate_voice_from_summary(summary_text):
+    """
+    Sinh giọng nói từ văn bản và upload lên Cloudinary.
+    Trả về URL của file audio hoặc None nếu lỗi.
+    """
+    if not summary_text:
+        return None
+
+    temp_path = None
+    try:
+        print("[*] Đang khởi tạo Text-to-Speech...")
+        tts = gTTS(text=summary_text, lang='vi')
+        
+        # Lưu file mp3 vào thư mục tạm của hệ điều hành
+        file_name = f"summary_{uuid.uuid4().hex}.mp3"
+        temp_dir = tempfile.gettempdir()
+        temp_path = os.path.join(temp_dir, file_name)
+        tts.save(temp_path)
+        
+        print("[*] Đang upload audio lên Cloudinary...")
+        # Upload lên thư mục 'techbyte_audio' trên Cloudinary
+        response = cloudinary.uploader.upload(
+            temp_path, 
+            resource_type="video", # Cloudinary dùng type "video" cho file audio
+            folder="techbyte_audio",
+            public_id=file_name.replace('.mp3', '')
+        )
+        audio_url = response.get('secure_url')
+        print(f"[+] Đã upload audio: {audio_url}")
+        return audio_url
+
+    except Exception as e:
+        print(f"[-] Lỗi Text-to-Speech hoặc upload Cloudinary: {e}")
+        return None
+    finally:
+        # Dọn dẹp file tạm ở máy local
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
+
 # ==========================================
 # 3. MAIN RUNNER MODULE
 # ==========================================
@@ -201,6 +254,9 @@ def run_crawler():
                 continue
 
             category_text, summary_text = generate_summary(clean_text) if clean_text else ("Khác", None)
+            
+            # --- TÍCH HỢP TEXT-TO-SPEECH TẠI ĐÂY ---
+            voice_link = generate_voice_from_summary(summary_text)
 
             try:
                 with connection.cursor() as cursor:
@@ -219,7 +275,7 @@ def run_crawler():
                     """
                     cursor.execute(
                         sql_content,
-                        (article_id, content_html, clean_text, summary_text, None)
+                        (article_id, content_html, clean_text, summary_text, voice_link)
                     )
                 
                 connection.commit()
