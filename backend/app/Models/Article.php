@@ -16,6 +16,6 @@ class Article extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'Title', 'Slug', 'ThumbnailURL', 'Original_URL', 'URL_Hash', 'PublishDate', 'ViewCount', 'Status', 'Source_ID'
+        'Title', 'Slug', 'ThumbnailURL', 'Original_URL', 'URL_Hash', 'PublishDate', 'ViewCount', 'Source_ID'
     ];
 }

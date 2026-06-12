@@ -13,7 +13,7 @@ class ArticleRepository implements ArticleRepositoryInterface
         $page = max((int) ($filters['page'] ?? 1), 1);
         $perPage = min(max((int) ($filters['per_page'] ?? 15), 1), 50);
 
-        $query = Article::query()->where('Status', 'published')->orderBy('PublishDate', 'desc');
+        $query = Article::query()->orderBy('PublishDate', 'desc');
 
         $total = $query->count();
 
@@ -50,7 +50,6 @@ class ArticleRepository implements ArticleRepositoryInterface
     public function getLatest(int $limit): array
     {
         $rows = Article::query()
-            ->where('Status', 'published')
             ->orderBy('PublishDate', 'desc')
             ->limit($limit)
             ->get(['Article.*']);
@@ -62,7 +61,6 @@ class ArticleRepository implements ArticleRepositoryInterface
     {
         // Trending defined by ViewCount (most read)
         $rows = Article::query()
-            ->where('Status', 'published')
             ->orderByDesc('ViewCount')
             ->limit($limit)
             ->get(['Article.*']);
@@ -136,7 +134,6 @@ class ArticleRepository implements ArticleRepositoryInterface
     {
         // Simple related: pick most recent published articles excluding current
         $query = Article::query()
-            ->where('Status', 'published')
             ->where('Article_ID', '!=', $article['id'] ?? 0)
             ->orderBy('PublishDate', 'desc')
             ->limit($limit)
