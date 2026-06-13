@@ -21,7 +21,7 @@ Route::prefix('techbyte')->group(function (): void {
     Route::get('articles/{id}/specs', [SpecsController::class, 'show']);
     Route::get('articles/{id}/comments', [CommentController::class, 'indexByArticle']);
 
-    Route::middleware('api.token')->group(function (): void {
+    Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('auth/logout', [AuthController::class, 'logout']);
 
         Route::middleware('api.role:user,admin')->group(function (): void {

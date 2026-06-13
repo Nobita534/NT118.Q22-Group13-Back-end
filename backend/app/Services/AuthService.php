@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Repositories\Contracts\UserRepositoryInterface;
-use App\Support\ApiTokenService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Models\User;
 
 class AuthService
 {
@@ -15,39 +15,38 @@ class AuthService
 
     public function __construct(
         private readonly UserRepositoryInterface $users,
-        private readonly ApiTokenService $tokens,
     ) {}
 
     public function login(string $email, string $password): array
     {
-        $user = $this->users->findByEmail($email);
+        // Tìm user từ Repository (giả định trả về mảng hoặc object)
+        $userArray = $this->users->findByEmail($email);
 
-        if (! $user || ! Hash::check($password, $user['password'])) {
+        if (! $userArray || ! Hash::check($password, $userArray['password'])) {
             throw new \RuntimeException('Invalid credentials');
         }
 
-        $name = $user['name'] ?? $user['username'] ?? null;
-        $username = $user['username'] ?? $user['name'] ?? null;
+        // Lấy ra Eloquent Model của User để dùng hàm tạo Token của Sanctum
+        /** @var \App\Models\User $userModel */
+        $userModel = \App\Models\User::find($userArray['id']);
 
-        $token = $this->tokens->issue([
-            'id' => $user['id'],
-            'name' => $name,
-            'username' => $username,
-            'email' => $user['email'],
-            'role' => $user['role'],
-        ]);
+        // Tạo token qua Sanctum
+        $tokenResult = $userModel->createToken('techbyte-device-token');
+
+        $name = $userArray['name'] ?? $userArray['username'] ?? null;
+        $username = $userArray['username'] ?? $userArray['name'] ?? null;
 
         return [
-            'access_token' => $token['access_token'],
-            'token_type' => $token['token_type'],
-            'expires_in' => $token['expires_in'],
+            'access_token' => $tokenResult->plainTextToken, // Chuỗi token dạng Plain Text trả về cho Client
+            'token_type' => 'Bearer',
+            'expires_in' => config('sanctum.expiration', 60) * 60, // 60 phút tính bằng giây
             'refresh_token' => null,
             'user' => [
-                'id' => $user['id'],
+                'id' => $userArray['id'],
                 'name' => $name,
                 'username' => $username,
-                'email' => $user['email'],
-                'role' => $user['role'],
+                'email' => $userArray['email'],
+                'role' => $userArray['role'],
             ],
         ];
     }
@@ -65,23 +64,19 @@ class AuthService
         $user = $this->users->create([
             'username' => $username,
             'email' => $email,
-            // Let the User model handle hashing via the `password` cast
             'password' => $password,
             'role' => 'user',
         ]);
 
-        $token = $this->tokens->issue([
-            'id' => $user['id'],
-            'name' => $user['name'] ?? $user['username'],
-            'username' => $user['username'] ?? $user['name'],
-            'email' => $user['email'],
-            'role' => $user['role'],
-        ]);
+        // Tạo token Sanctum ngay sau khi đăng ký thành công
+        /** @var User $userModel */
+        $userModel = User::find($user['id']);
+        $tokenResult = $userModel->createToken('techbyte-device-token');
 
         return [
-            'access_token' => $token['access_token'],
-            'token_type' => $token['token_type'],
-            'expires_in' => $token['expires_in'],
+            'access_token' => $tokenResult->plainTextToken,
+            'token_type' => 'Bearer',
+            'expires_in' => config('sanctum.expiration', 60) * 60,
             'refresh_token' => null,
             'user' => [
                 'id' => $user['id'],
@@ -94,9 +89,7 @@ class AuthService
     }
 
     public function logout(?string $token): void
-    {
-        $this->tokens->revoke($token);
-    }
+    {}
 
     public function forgotPassword(string $email): ?string
     {

@@ -16,15 +16,15 @@ class BookmarkController extends Controller
     {
         $this->bookmarkService = $bookmarkService;
     }
-
+    
     public function bookmark(BookmarkRequest $request, $id)
     {
         // Lấy mảng thông tin User từ custom middleware
-        $user = $request->attributes->get('api_user'); 
+        $userArray = $request->user()->toArray(); 
 
         // dd($user);
 
-        $result = $this->bookmarkService->toggleBookmark((int)$id, $user);; 
+        $result = $this->bookmarkService->toggleBookmark((int)$id, $userArray);; 
 
         return ApiResponse::success($result, 'Xử lý trạng thái bookmark thành công.');
     }
