@@ -9,7 +9,7 @@ class BookmarkRepository implements Contracts\BookmarkRepositoryInterface
 {
     public function bookmark(int $articleId, array $user): array
     {
-        $userId = $user['id'];
+        $userId = $user['User_ID'];
 
         // Kiểm tra xem user đã bookmark bài viết này chưa
         $bookmark = DB::table('Bookmarks')
