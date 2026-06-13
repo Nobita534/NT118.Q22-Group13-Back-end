@@ -54,9 +54,9 @@ class AuthController extends Controller
         return ApiResponse::success($payload, 'Register successful.', 201);
     }
 
-    public function logout(Request $request)
-    {
-        $this->auth->logout($request->attributes->get('api_token'));
+    public function logout(Request $request){
+        // Thu hồi (Xóa) token hiện tại đang dùng để request của User này
+        $request->user()->currentAccessToken()->delete();
 
         return ApiResponse::success(null, 'Logout successful.');
     }

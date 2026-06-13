@@ -11,8 +11,8 @@ class EnsureApiRole
 {
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        $user = $request->attributes->get('api_user');
-        $role = strtolower((string) ($user['role'] ?? ''));
+        $user = $request->user();
+        $role = strtolower((string) ($user->Role ?? ''));
         $allowedRoles = array_map('strtolower', $roles);
 
         if (! $role || ! in_array($role, $allowedRoles, true)) {

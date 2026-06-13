@@ -19,12 +19,12 @@ class InteractionController extends Controller
     public function like(InteractionRequest $request, $id)
     {
         // Lấy mảng thông tin User từ custom middleware của bạn
-        $user = $request->attributes->get('api_user'); 
+        $userArray = $request->user()->toArray();
 
         // dd($user);
 
         // Khớp đúng với signature mới ở tầng Service: (int $articleId, array $user)
-        $result = $this->interactionService->toggleLike((int)$id, $user);
+        $result = $this->interactionService->toggleLike((int)$id, $userArray);
 
         return ApiResponse::success($result, 'Xử lý tương tác bài viết thành công.');
     }

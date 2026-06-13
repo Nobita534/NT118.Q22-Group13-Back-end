@@ -152,8 +152,6 @@ class ArticleRepository implements ArticleRepositoryInterface
             'id' => (int) ($m->Article_ID ?? 0),
             'title' => $m->Title ?? null,
             'slug' => $m->Slug ?? null,
-            'summary' => $m->Summary_text ?? $m->SummaryText ?? null,
-            'summary_text' => $m->Summary_text ?? $m->SummaryText ?? null,
             'source' => $m->Original_URL ?? null,
             'time' => $m->PublishDate ? (is_string($m->PublishDate) ? $m->PublishDate : $m->PublishDate->toIso8601String()) : null,
             'interaction' => (int) ($m->ViewCount ?? 0),
