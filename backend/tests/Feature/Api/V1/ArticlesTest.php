@@ -37,4 +37,13 @@ class ArticlesTest extends TestCase
                 'meta' => ['request_id', 'timestamp'],
             ]);
     }
+
+    public function test_article_detail_returns_summary_voice_link(): void
+    {
+        $response = $this->getJson('/api/techbyte/articles/101');
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.sum_voice_link', 'https://cdn.techbyte.vn/articles/101/summary.mp3');
+    }
 }

@@ -73,7 +73,13 @@ class ArticleRepository implements ArticleRepositoryInterface
         $row = Article::query()
             ->leftJoin('Article_Content', 'Article.Article_ID', '=', 'Article_Content.Article_ID')
             ->where('Article.Article_ID', $id)
-            ->first(['Article.*', 'Article_Content.ContentHTML as content_html', 'Article_Content.CleanText as content_clean', 'Article_Content.Sum_content as Summary_text']);
+            ->first([
+                'Article.*',
+                'Article_Content.ContentHTML as content_html',
+                'Article_Content.CleanText as content_clean',
+                'Article_Content.Sum_content as Summary_text',
+                'Article_Content.sum_voice_link as sum_voice_link',
+            ]);
 
         if (! $row) {
             return null;
@@ -84,6 +90,7 @@ class ArticleRepository implements ArticleRepositoryInterface
             'title' => $row->Title ?? null,
             'slug' => $row->Slug ?? null,
             'summary_text' => $row->Summary_text ?? null,
+            'sum_voice_link' => $row->sum_voice_link ?? null,
             'thumbnail_url' => $row->ThumbnailURL ?? null,
             'source' => $row->Original_URL ?? null,
             'categories' => [],
