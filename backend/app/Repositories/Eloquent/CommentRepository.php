@@ -43,7 +43,7 @@ class CommentRepository implements CommentRepositoryInterface
     {
         $id = DB::table('Comments')->insertGetId([
             'Article_ID' => $articleId,
-            'User_ID' => $user['id'],
+            'User_ID' => $user['User_ID'] ?? $user['id'],
             'Content' => $content,
             'CreatedAt' => now(),
         ], 'Comment_ID');

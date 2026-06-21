@@ -9,7 +9,7 @@ class InteractionRepository implements Contracts\InteractionRepositoryInterface
 {
     public function like(int $articleId, array $user): array
     {
-        $userId = $user['id'];
+        $userId = $user['User_ID'] ?? $user['id'];
         $type = 'like';
 
         // Kiểm tra lượt tương tác thích bài viết dựa vào đúng Schema "UserID" viết liền

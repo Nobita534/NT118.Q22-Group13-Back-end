@@ -30,14 +30,14 @@ class BookmarkController extends Controller
     }
     public function index(Request $request)
     {
-        $user = $request->attributes->get('api_user');
+        $user = $request->user() ? $request->user()->toArray() : null;
         $articles = $this->bookmarkService->getBookmarkedArticles($user);
 
         return ApiResponse::success($articles, 'Danh sách bài viết đã lưu.');
     }
     public function count(Request $request)
     {
-        $user = $request->attributes->get('api_user');
+        $user = $request->user() ? $request->user()->toArray() : null;
         $count = $this->bookmarkService->getBookmarkedArticlesCount($user);
 
         return ApiResponse::success(['count' => $count], 'Số bài viết đã lưu.');
