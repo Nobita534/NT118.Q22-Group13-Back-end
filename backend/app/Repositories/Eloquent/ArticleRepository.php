@@ -68,7 +68,7 @@ class ArticleRepository implements ArticleRepositoryInterface
         return collect($rows)->map(fn($m) => $this->mapModel($m))->all();
     }
 
-    public function findByIdWithContent(int $id): ?array
+    public function findByIdWithContent(int $id, ?array $user = null): ?array
     {
         $row = Article::query()
             ->leftJoin('Article_Content', 'Article.Article_ID', '=', 'Article_Content.Article_ID')
@@ -83,6 +83,29 @@ class ArticleRepository implements ArticleRepositoryInterface
 
         if (! $row) {
             return null;
+        }
+
+        // Fetch actual counts
+        $likes = \Illuminate\Support\Facades\DB::table('Interactions')->where('Article_ID', $id)->where('Type', 'like')->count();
+        $bookmarks = \Illuminate\Support\Facades\DB::table('Bookmarks')->where('Article_ID', $id)->count();
+        $comments = \Illuminate\Support\Facades\DB::table('Comments')->where('Article_ID', $id)->count();
+
+        // Check user action state if logged in
+        $isLiked = false;
+        $isBookmarked = false;
+        if ($user) {
+            $userId = $user['User_ID'] ?? $user['id'] ?? null;
+            if ($userId) {
+                $isLiked = \Illuminate\Support\Facades\DB::table('Interactions')
+                    ->where('UserID', $userId)
+                    ->where('Article_ID', $id)
+                    ->where('Type', 'like')
+                    ->exists();
+                $isBookmarked = \Illuminate\Support\Facades\DB::table('Bookmarks')
+                    ->where('User_ID', $userId)
+                    ->where('Article_ID', $id)
+                    ->exists();
+            }
         }
 
         return [
@@ -102,7 +125,14 @@ class ArticleRepository implements ArticleRepositoryInterface
             ],
             'published_at' => $row->PublishDate ? (is_string($row->PublishDate) ? $row->PublishDate : $row->PublishDate->toIso8601String()) : null,
             'updated_at' => $row->updated_at ?? null,
-            'stats' => ['views' => (int) ($row->ViewCount ?? 0), 'comments_count' => 0, 'likes' => 0, 'bookmarks' => 0],
+            'is_liked' => $isLiked,
+            'is_bookmarked' => $isBookmarked,
+            'stats' => [
+                'views' => (int) ($row->ViewCount ?? 0),
+                'comments_count' => $comments,
+                'likes' => $likes,
+                'bookmarks' => $bookmarks,
+            ],
         ];
     }
 

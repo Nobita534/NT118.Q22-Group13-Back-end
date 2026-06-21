@@ -120,7 +120,7 @@ class FakeArticleRepository implements ArticleRepositoryInterface
             })->values()->all();
     }
 
-    public function findByIdWithContent(int $id): ?array
+    public function findByIdWithContent(int $id, ?array $user = null): ?array
     {
         return $this->findById($id);
     }

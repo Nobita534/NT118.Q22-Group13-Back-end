@@ -23,9 +23,10 @@ class ArticleController extends Controller
         );
     }
 
-    public function show(int $id)
+    public function show(Request $request, int $id)
     {
-        $article = $this->articles->show($id);
+        $user = $request->user('sanctum') ? $request->user('sanctum')->toArray() : null;
+        $article = $this->articles->show($id, $user);
 
         if (! $article) {
             return ApiResponse::error('Article not found.', 404, 'RESOURCE_NOT_FOUND');

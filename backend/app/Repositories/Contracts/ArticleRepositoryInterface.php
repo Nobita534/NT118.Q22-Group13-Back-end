@@ -9,7 +9,7 @@ interface ArticleRepositoryInterface
     public function findById(int $id): ?array;
 
     // Return article array including content (clean text and HTML) suitable for API output
-    public function findByIdWithContent(int $id): ?array;
+    public function findByIdWithContent(int $id, ?array $user = null): ?array;
 
     // Batch fetch articles by ids with content
     public function findManyByIdsWithContent(array $ids): array;
