@@ -9,7 +9,8 @@ class BookmarkRepository implements Contracts\BookmarkRepositoryInterface
 {
     public function bookmark(int $articleId, array $user): array
     {
-        $userId = $user['User_ID'];
+        $userId = $user['User_ID'] ?? $user['id'];
+
 
         // Kiểm tra xem user đã bookmark bài viết này chưa
         $bookmark = DB::table('Bookmarks')
@@ -35,7 +36,7 @@ class BookmarkRepository implements Contracts\BookmarkRepositoryInterface
 
     public function getBookmarkedArticles(array $user): array
     {
-        $userId = $user['id'];
+        $userId = $user['User_ID'] ?? $user['id'];
 
         $rows = DB::table('Bookmarks')
             ->join('Article', 'Bookmarks.Article_ID', '=', 'Article.Article_ID')
@@ -82,7 +83,7 @@ class BookmarkRepository implements Contracts\BookmarkRepositoryInterface
     public function getBookmarkedArticlesCount(array $user): int
     {
         return DB::table('Bookmarks')
-            ->where('User_ID', $user['id'])
+            ->where('User_ID', $user['User_ID'] ?? $user['id'])
             ->count();
     }
 

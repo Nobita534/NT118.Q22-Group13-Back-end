@@ -120,7 +120,7 @@ class FakeArticleRepository implements ArticleRepositoryInterface
             })->values()->all();
     }
 
-    public function findByIdWithContent(int $id): ?array
+    public function findByIdWithContent(int $id, ?array $user = null): ?array
     {
         return $this->findById($id);
     }
@@ -156,6 +156,7 @@ class FakeArticleRepository implements ArticleRepositoryInterface
                 'slug' => 'snapdragon-8-gen-5-hieu-nang-thuc-te',
                 'summary' => 'Bài test hiệu năng CPU/GPU và nhiệt độ trong tác vụ nặng.',
                 'summary_text' => 'Bài test hiệu năng CPU/GPU và nhiệt độ trong tác vụ nặng.',
+                'sum_voice_link' => 'https://cdn.techbyte.vn/articles/101/summary.mp3',
                 'thumbnail_url' => 'https://cdn.techbyte.vn/articles/101/thumb.jpg',
                 'original_url' => 'https://techbyte.vn/articles/101',
                 'source' => 'https://techbyte.vn/articles/101',
@@ -188,6 +189,7 @@ class FakeArticleRepository implements ArticleRepositoryInterface
                 'slug' => 'iphone-18-pro-max-camera-va-pin',
                 'summary' => 'Tổng hợp camera, pin và trải nghiệm thực tế.',
                 'summary_text' => 'Tổng hợp camera, pin và trải nghiệm thực tế.',
+                'sum_voice_link' => null,
                 'thumbnail_url' => 'https://cdn.techbyte.vn/articles/102/thumb.jpg',
                 'original_url' => 'https://techbyte.vn/articles/102',
                 'source' => 'https://techbyte.vn/articles/102',

@@ -13,11 +13,11 @@ class ArticleService
         return $this->articles->paginate($filters);
     }
 
-    public function show(int $id): ?array
+    public function show(int $id, ?array $user = null): ?array
     {
         // try to get full article with content
         if (method_exists($this->articles, 'findByIdWithContent')) {
-            $article = $this->articles->findByIdWithContent($id);
+            $article = $this->articles->findByIdWithContent($id, $user);
         } else {
             $article = $this->articles->findById($id);
         }

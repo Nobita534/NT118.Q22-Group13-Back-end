@@ -35,7 +35,7 @@ class CommentController extends Controller
 
     public function store(CommentStoreRequest $request)
     {
-        $user = $request->attributes->get('api_user');
+        $user = $request->user() ? $request->user()->toArray() : null;
 
         if (! $user) {
             return ApiResponse::error('Unauthenticated.', 401, 'AUTH_UNAUTHENTICATED');

@@ -13,7 +13,7 @@ class MeController extends Controller
 
     public function me(Request $request)
     {
-        $user = $request->attributes->get('api_user');
+        $user = $request->user() ? $request->user()->toArray() : null;
 
         if (! $user) {
             return ApiResponse::error('Unauthenticated.', 401, 'AUTH_UNAUTHENTICATED');

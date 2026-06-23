@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.token' => \App\Http\Middleware\EnsureApiToken::class,
             'api.role' => \App\Http\Middleware\EnsureApiRole::class,
         ]);
+        $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $exception, Request $request) {
