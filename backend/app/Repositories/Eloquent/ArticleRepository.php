@@ -15,6 +15,10 @@ class ArticleRepository implements ArticleRepositoryInterface
 
         $query = Article::query()->orderBy('PublishDate', 'desc');
 
+        if (! empty($filters['category'])) {
+            $query->where('Category', $filters['category']);
+        }
+
         $total = $query->count();
 
         $items = $query->forPage($page, $perPage)->get()->map(function (Article $model) {
@@ -194,6 +198,7 @@ class ArticleRepository implements ArticleRepositoryInterface
             'interaction' => (int) ($m->ViewCount ?? 0),
             'thumbnail' => $thumbnail,
             'thumbnail_url' => $thumbnail,
+            'category' => $m->Category,
             'stats' => ['comments_count' => 0, 'likes' => 0, 'bookmarks' => 0],
         ];
     }

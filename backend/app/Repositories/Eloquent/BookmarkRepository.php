@@ -11,6 +11,7 @@ class BookmarkRepository implements Contracts\BookmarkRepositoryInterface
     {
         $userId = $user['User_ID'] ?? $user['id'];
 
+
         // Kiểm tra xem user đã bookmark bài viết này chưa
         $bookmark = DB::table('Bookmarks')
             ->where('User_ID', $userId)
