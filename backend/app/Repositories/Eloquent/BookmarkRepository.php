@@ -51,7 +51,6 @@ class BookmarkRepository implements Contracts\BookmarkRepositoryInterface
                 'Article.PublishDate',
                 'Article.ThumbnailURL',
                 'Article.ViewCount',
-                'Article_Content.CleanText as content_clean',
                 'Article_Content.Sum_content as summary_text',
             ]);
 
@@ -64,7 +63,7 @@ class BookmarkRepository implements Contracts\BookmarkRepositoryInterface
                 'slug' => $row->Slug ?? null,
                 'summary' => $row->summary_text ?? null,
                 'summary_text' => $row->summary_text ?? null,
-                'content' => $row->content_clean ?? '',
+                'content' => '',
                 'source' => $row->Original_URL ?? null,
                 'time' => $row->PublishDate ? (is_string($row->PublishDate) ? $row->PublishDate : $row->PublishDate->toIso8601String()) : null,
                 'published_at' => $row->PublishDate ? (is_string($row->PublishDate) ? $row->PublishDate : $row->PublishDate->toIso8601String()) : null,
